@@ -1,26 +1,67 @@
+# # # Starter pipeline
+# # # Start with a minimal pipeline that you can customize to build and deploy your code.
+# # # Add steps that build, run tests, deploy, and more:
+# # # https://aka.ms/yaml
+
+# # trigger:
+# # - main
+
+# # pool:
+# #   vmImage: ubuntu-latest
+
+# # steps:
+# # - script: echo Hello, world!
+# #   displayName: 'Run a one-line script'
+
+# # - script: |
+# #     echo Add other tasks to build, test, and deploy your project.
+# #     echo See https://aka.ms/yaml
+# #   displayName: 'Run a multi-line script'
 # # Starter pipeline
 # # Start with a minimal pipeline that you can customize to build and deploy your code.
 # # Add steps that build, run tests, deploy, and more:
 # # https://aka.ms/yaml
 
 # trigger:
-# - main
+#   branches:
+#     include:
+#       - main  # Adjust to your main branch name if necessary
 
-# pool:
-#   vmImage: ubuntu-latest
+# #variables:
+#   # Define any variables you might need
+#   #GITHUB_REPO: 'https://github.com/prislano6/Colab.git'
+#   #GITHUB_TOKEN: $(github_token)  # Set this token in Azure DevOps variable groups
 
-# steps:
-# - script: echo Hello, world!
-#   displayName: 'Run a one-line script'
+# stages:
+#   - stage: FetchModels
+#     jobs:
+#       - job: CloneRepo
+#         pool:
+#           vmImage: 'ubuntu-latest'
+#         steps:
+#           - checkout: none  # We won't use the default checkout
+#           - script: |
+#               echo "Cloning the GitHub repository..."
+#               git clone https://$(GITHUB_TOKEN)@https://github.com/prislano6/Colab.git
+#             displayName: 'Clone GitHub Repository'
 
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run a multi-line script'
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+#           - script: |
+#               echo "Copying model files to the staging directory..."
+#               cp -r repo-name/models ./staging  # Adjust the path as needed
+#             displayName: 'Copy Model Files'
+
+#   - stage: PublishModels
+#     jobs:
+#       - job: PublishArtifacts
+#         pool:
+#           vmImage: 'ubuntu-latest'
+#         steps:
+#           - task: PublishBuildArtifacts@1
+#             inputs:
+#               PathtoPublish: 'staging'  # Directory to publish
+#               ArtifactName: 'model-artifacts'
+#               publishLocation: 'Container'
+#             displayName: 'Publish Model Artifacts'
 
 trigger:
   branches:
@@ -28,7 +69,7 @@ trigger:
       - main  # Adjust to your main branch name if necessary
 
 #variables:
-  # Define any variables you might need
+  # Replace with your GitHub repository details and tokens
   #GITHUB_REPO: 'https://github.com/prislano6/Colab.git'
   #GITHUB_TOKEN: $(github_token)  # Set this token in Azure DevOps variable groups
 
@@ -42,7 +83,7 @@ stages:
           - checkout: none  # We won't use the default checkout
           - script: |
               echo "Cloning the GitHub repository..."
-              git clone https://$(GITHUB_TOKEN)@https://github.com/prislano6/Colab.git
+              git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
             displayName: 'Clone GitHub Repository'
 
           - script: |
@@ -51,6 +92,7 @@ stages:
             displayName: 'Copy Model Files'
 
   - stage: PublishModels
+    dependsOn: FetchModels
     jobs:
       - job: PublishArtifacts
         pool:
@@ -62,6 +104,33 @@ stages:
               ArtifactName: 'model-artifacts'
               publishLocation: 'Container'
             displayName: 'Publish Model Artifacts'
+
+  - stage: DeployToStaging
+    dependsOn: PublishModels
+    jobs:
+      - deployment: DeployStagingEnv
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'staging'  # Azure DevOps environment name (creates if it doesn’t exist)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: model-artifacts  # Download published artifacts from previous stages
+
+                - script: |
+                    echo "Deploying application to staging environment..."
+                    # Insert deployment commands for your staging environment here
+                    # Example for Azure Web App
+                    az webapp up --name your-staging-app --resource-group your-resource-group
+                  displayName: 'Deploy to Staging'
+
+                - script: |
+                    echo "Running tests on staging environment..."
+                    # Insert testing commands or API calls to validate the deployment
+                  displayName: 'Run Staging Tests'
+
 
 
 
