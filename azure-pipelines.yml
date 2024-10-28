@@ -42,7 +42,7 @@ stages:
           - checkout: none  # We won't use the default checkout
           - script: |
               echo "Cloning the GitHub repository..."
-              git clone https://$(GITHUB_TOKEN)@github.com/username/repo-name.git
+              git clone https://$(GITHUB_TOKEN)@https://github.com/prislano6/Colab.git
             displayName: 'Clone GitHub Repository'
 
           - script: |
