@@ -29,7 +29,7 @@ trigger:
 
 variables:
   # Define any variables you might need
-  GITHUB_REPO: 'https://github.com/username/repo-name.git'
+  GITHUB_REPO: 'https://github.com/prislano6/Colab.git'
   GITHUB_TOKEN: $(github_token)  # Set this token in Azure DevOps variable groups
 
 stages:
