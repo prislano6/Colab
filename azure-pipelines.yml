@@ -1,19 +1,67 @@
+# # Starter pipeline
+# # Start with a minimal pipeline that you can customize to build and deploy your code.
+# # Add steps that build, run tests, deploy, and more:
+# # https://aka.ms/yaml
+
+# trigger:
+# - main
+
+# pool:
+#   vmImage: ubuntu-latest
+
+# steps:
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
+
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run a multi-line script'
 # Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
 trigger:
-- main
+  branches:
+    include:
+      - main  # Adjust to your main branch name if necessary
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  # Define any variables you might need
+  GITHUB_REPO: 'https://github.com/username/repo-name.git'
+  GITHUB_TOKEN: $(github_token)  # Set this token in Azure DevOps variable groups
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+  - stage: FetchModels
+    jobs:
+      - job: CloneRepo
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: none  # We won't use the default checkout
+          - script: |
+              echo "Cloning the GitHub repository..."
+              git clone https://$(GITHUB_TOKEN)@github.com/username/repo-name.git
+            displayName: 'Clone GitHub Repository'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+          - script: |
+              echo "Copying model files to the staging directory..."
+              cp -r repo-name/models ./staging  # Adjust the path as needed
+            displayName: 'Copy Model Files'
+
+  - stage: PublishModels
+    jobs:
+      - job: PublishArtifacts
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'staging'  # Directory to publish
+              ArtifactName: 'model-artifacts'
+              publishLocation: 'Container'
+            displayName: 'Publish Model Artifacts'
+
+
+
