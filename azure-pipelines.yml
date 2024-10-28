@@ -84,11 +84,11 @@ stages:
           - script: |
               echo "Cloning the GitHub repository..."
               git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
-            displayName: 'Clone GitHub Repository'
+            displayName: 'Colab'
 
           - script: |
               echo "Copying model files to the staging directory..."
-              cp -r repo-name/models ./staging  # Adjust the path as needed
+              cp -r Colab/Sentiments ./staging  # Adjust the path as needed
             displayName: 'Copy Model Files'
 
   - stage: PublishModels
