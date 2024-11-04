@@ -84,6 +84,8 @@ stages:
           - script: |
              echo "Creating the staging directory..."
              mkdir -p staging  # -p flag ensures no error if the directory already exists
+             pwd
+             ls-la
             displayName: 'Create Staging Directory'
 
 
@@ -91,10 +93,13 @@ stages:
           - script: |
               echo "Cloning the GitHub repository..."
               git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
+              ls-la Colab
+              echo "Cloned directory contents:"
             displayName: 'Colab'
 
           - script: |
               echo "Copying model files to the staging directory..."
+              la-la Colab/Sentiments
               cp -r Colab/Sentiments ./staging  # Adjust the path as needed
             displayName: 'Copy Model Files'
 
