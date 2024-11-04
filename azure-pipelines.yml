@@ -82,6 +82,13 @@ stages:
         steps:
           - checkout: none  # We won't use the default checkout
           - script: |
+             echo "Creating the staging directory..."
+             mkdir -p staging  # -p flag ensures no error if the directory already exists
+             displayName: 'Create Staging Directory'
+
+
+         
+          - script: |
               echo "Cloning the GitHub repository..."
               git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
             displayName: 'Colab'
@@ -123,7 +130,7 @@ stages:
                     echo "Deploying application to staging environment..."
                     # Insert deployment commands for your staging environment here
                     # Example for Azure Web App
-                    az webapp up --name your-staging-app --resource-group your-resource-group
+                    
                   displayName: 'Deploy to Staging'
 
                 - script: |
