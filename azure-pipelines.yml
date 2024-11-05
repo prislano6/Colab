@@ -86,8 +86,8 @@ stages:
              mkdir  "$(Build.ArtifactStagingDirectory)\staging" # -p flag ensures no error if the directory already exists
              echo "Current artifact directory"
              dir $(Build.ArtifactStagingDirectory)
-
             displayName: 'Create Staging Directory'
+
           - script: |
               echo "Listing directory content"
               dir "$(Build.ArtifactStagingDirectory)"
@@ -96,7 +96,7 @@ stages:
           - script: |
               echo "Cloning the GitHub repository..."
               git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
-              dir Colab
+              dir Colab\*
               echo "Cloned directory contents:"
             displayName: 'Colab'
 
