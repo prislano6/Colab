@@ -104,6 +104,7 @@ stages:
                   echo "Failed to clone the repository"
                   exit /b 1
               )
+              dir "$(Build.ArtifactStagingDirectory)\staging"
             displayName: "Colab"
 
           - script: |
