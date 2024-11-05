@@ -101,7 +101,9 @@ stages:
           - script: |
               echo "Copying model files to the staging directory..."
               dir Colab
-              cp -r Colab ./staging  # Adjust the path as needed
+              xcopy Colab\Sentiments staging\ /E /I   # Adjust the path as needed
+              echo "Staging directory contents:"
+              dir staging
             displayName: 'Copy Model Files'
 
   - stage: PublishModels
