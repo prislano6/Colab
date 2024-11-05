@@ -95,10 +95,11 @@ stages:
                     
           - script: |
               echo "Cloning the GitHub repository..."
-              git "clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git"
-              dir "Colab"
+              if  git "clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git"; then
+              echo "Succefullyt cloned"
               echo "Cloned directory contents:"
-            displayName: 'Colab'
+              dir "Colab"
+            displayName: "Colab"
 
           - script: |
               echo "Copying model files to the staging directory..."
