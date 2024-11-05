@@ -78,17 +78,19 @@ stages:
     jobs:
       - job: CloneRepo
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'windows-latest'
         steps:
           - checkout: none  # We won't use the default checkout
           - script: |
              echo "Creating the staging directory..."
-             mkdir -p staging  # -p flag ensures no error if the directory already exists
-             pwd
+             mkdir  $(Build.ArtifactStagingDirectory)\staging  # -p flag ensures no error if the directory already exists
+             echo "Current artifact directory"
+             dir $(Build.ArtifactStagingDirectory)
+
             displayName: 'Create Staging Directory'
           - script: |
               echo "Listing directory content"
-              dir 
+              dir  $(Build.ArtifactStagingDirectory)
             displayName: 'List directory contents on windows'
                     
           - script: |
@@ -111,11 +113,11 @@ stages:
     jobs:
       - job: PublishArtifacts
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'windows-latest'
         steps:
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: 'staging'  # Directory to publish
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)\staging'  # Directory to publish
               ArtifactName: 'model-artifacts'
               publishLocation: 'Container'
             displayName: 'Publish Model Artifacts'
