@@ -115,6 +115,10 @@ stages:
         pool:
           vmImage: 'windows-latest'
         steps:
+          - script: |
+             echo "Listing contents of the staging directory before publishing:"
+             dir "$(Build.ArtifactStagingDirectory)\staging"
+             
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)\staging'  # Directory to publish
