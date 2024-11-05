@@ -83,14 +83,14 @@ stages:
           - checkout: none  # We won't use the default checkout
           - script: |
              echo "Creating the staging directory..."
-             mkdir  $(Build.ArtifactStagingDirectory)\staging  # -p flag ensures no error if the directory already exists
+             mkdir  "$(Build.ArtifactStagingDirectory)\staging" # -p flag ensures no error if the directory already exists
              echo "Current artifact directory"
              dir $(Build.ArtifactStagingDirectory)
 
             displayName: 'Create Staging Directory'
           - script: |
               echo "Listing directory content"
-              dir  $(Build.ArtifactStagingDirectory)
+              dir "$(Build.ArtifactStagingDirectory)"
             displayName: 'List directory contents on windows'
                     
           - script: |
@@ -103,9 +103,9 @@ stages:
           - script: |
               echo "Copying model files to the staging directory..."
               dir Colab
-              xcopy Colab\Sentiments staging\ /E /I   # Adjust the path as needed
+              xcopy "Colab\Sentiments" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
               echo "Staging directory contents:"
-              dir "$(Build.ArtifactStagingDirectory)\staging
+              dir "$(Build.ArtifactStagingDirectory)\staging"
             displayName: 'Copy Model Files'
 
   - stage: PublishModels
