@@ -109,7 +109,7 @@ stages:
           - script: |
               echo "Copying model files to the staging directory..."
               dir "Colab"
-              xcopy "Colab\*" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
+              xcopy "D:\a\1\s\Colab\*" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
               echo "Staging directory contents:"
               dir "$(Build.ArtifactStagingDirectory)\staging"
               if not exist "$(Build.ArtifactStagingDirectory)\staging\*" (
