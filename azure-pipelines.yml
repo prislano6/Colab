@@ -112,6 +112,10 @@ stages:
               xcopy "Colab\*" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
               echo "Staging directory contents:"
               dir "$(Build.ArtifactStagingDirectory)\staging"
+              if not exist "$(Build.ArtifactStagingDirectory)\staging\*" (
+              echo "Staging directory is empty or not found. Failing build."
+              exit /b 1
+              )
             displayName: 'Copy Model Files'
 
   - stage: PublishModels
