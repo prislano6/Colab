@@ -95,7 +95,7 @@ stages:
                     
           - script: |
               echo "Cloning the GitHub repository..."
-              git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git;
+              git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
               if %ERRORLEVEL% == 0 (
                   echo "Successfully cloned"
                   echo "Cloned directory contents:"
