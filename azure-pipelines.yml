@@ -95,10 +95,15 @@ stages:
                     
           - script: |
               echo "Cloning the GitHub repository..."
-              if  git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git; then
-              echo "Succefullyt cloned"
-              echo "Cloned directory contents:"
-              dir "Colab"
+              git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git;
+              if %ERRORLEVEL% == 0 (
+                  echo "Successfully cloned"
+                  echo "Cloned directory contents:"
+                  dir "Colab"
+              ) else (
+                  echo "Failed to clone the repository"
+                  exit /b 1
+              )
             displayName: "Colab"
 
           - script: |
