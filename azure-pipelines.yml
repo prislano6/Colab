@@ -94,14 +94,14 @@ stages:
           - script: |
               echo "Cloning the GitHub repository..."
               git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
-              ls-la Colab
+              dir Colab
               echo "Cloned directory contents:"
             displayName: 'Colab'
 
           - script: |
               echo "Copying model files to the staging directory..."
-              la-la Colab/Sentiments
-              cp -r Colab/Sentiments ./staging  # Adjust the path as needed
+              dir Colab
+              cp -r Colab ./staging  # Adjust the path as needed
             displayName: 'Copy Model Files'
 
   - stage: PublishModels
