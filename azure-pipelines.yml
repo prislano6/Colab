@@ -103,7 +103,7 @@ stages:
           - script: |
               echo "Copying model files to the staging directory..."
               dir Colab
-              xcopy "Colab\Sentiments" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
+              xcopy "Colab" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
               echo "Staging directory contents:"
               dir "$(Build.ArtifactStagingDirectory)\staging"
             displayName: 'Copy Model Files'
