@@ -85,11 +85,12 @@ stages:
              echo "Creating the staging directory..."
              mkdir -p staging  # -p flag ensures no error if the directory already exists
              pwd
-             ls-l
             displayName: 'Create Staging Directory'
-
-
-         
+          - script: |
+              echo "Listing directory content"
+              dir 
+            displayName: 'List directory contents on windows'
+                    
           - script: |
               echo "Cloning the GitHub repository..."
               git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
