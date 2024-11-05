@@ -95,15 +95,15 @@ stages:
                     
           - script: |
               echo "Cloning the GitHub repository..."
-              git clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git
-              dir Colab\*
+              git "clone https://$(GITHUB_TOKEN)@github.com/prislano6/Colab.git"
+              dir "Colab"
               echo "Cloned directory contents:"
             displayName: 'Colab'
 
           - script: |
               echo "Copying model files to the staging directory..."
-              dir Colab
-              xcopy "Colab" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
+              dir "Colab"
+              xcopy "Colab\*" "$(Build.ArtifactStagingDirectory)\staging" /E /I   # Adjust the path as needed
               echo "Staging directory contents:"
               dir "$(Build.ArtifactStagingDirectory)\staging"
             displayName: 'Copy Model Files'
