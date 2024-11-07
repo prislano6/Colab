@@ -1,1 +1,77 @@
 
+trigger:
+  branches:
+    include:
+      - master  # Adjust to your main branch name if necessary
+
+variables:
+  GITHUB_PAT: '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' # Use the token securely from Pipeline Variables
+
+stages:
+  - stage: FetchModels
+    jobs:
+      - job: CloneRepo
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - checkout: none  # Skip default checkout
+          
+          # Step 1: Clone the GitHub repository
+          - script: |
+              echo "Cloning the GitHub repository..."
+              git clone https://$(GITHUB_PAT)@github.com/prislano6/Colab.git $(Build.ArtifactStagingDirectory)/Colab
+              if %ERRORLEVEL% == 0 (
+                  echo "Successfully cloned"
+              ) else (
+                  echo "Failed to clone the repository"
+                  exit /b 1
+              )
+            displayName: 'Clone GitHub Repository'
+
+            # Step 2: Configure Git user information
+          - script: |
+              echo "Configuring Git user information..."
+              git config --global user.email "aiteam@Lubanzi.tech"
+              git config --global user.name "AI & Analytics"
+            displayName: 'Set Git User Information'
+
+          # Step 2: Add Azure DevOps repository as remote
+          - script: |
+              echo "Setting Azure DevOps repository as remote..."
+              cd $(Build.ArtifactStagingDirectory)/Colab
+              git remote add azure https://$(System.AccessToken)@dev.azure.com/lubanzi-ictc/AI/_git/Notebooks
+              git pull azure master --allow-unrelated-histories || exit 0
+              git diff --name-only --diff-filter=U | findstr /C:"azure-pipelines.yml" && (
+                echo "Conflict detected in azure-pipelines.yml. Resolving..."
+                git checkout --theirs azure-pipelines.yml
+                git add azure-pipelines.yml
+              )
+              git commit -m "Resolved merge conflict in azure-pipelines.yml" || echo "No conflicts to resolve."
+            displayName: 'Set Azure DevOps Remote'
+
+
+          # Step 3: Push the content from GitHub to Azure DevOps repository
+          - script: |
+              echo "Pushing the content to Azure DevOps repository..."
+              cd $(Build.ArtifactStagingDirectory)/Colab
+              git add .
+              git commit -m "Push from GitHub to Azure DevOps"
+              git push azure main || git push azure master
+            displayName: 'Push to Azure DevOps Repository'
+
+  - stage: PublishModels
+    dependsOn: FetchModels
+    jobs:
+      - job: PublishArtifacts
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - script: |
+              echo "Listing contents of the staging directory before publishing:"
+              dir "$(Build.ArtifactStagingDirectory)/Colab"
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/Colab'  # Directory to publish
+              ArtifactName: 'model-artifacts'
+              publishLocation: 'Container'
+            displayName: 'Publish Model Artifacts'
