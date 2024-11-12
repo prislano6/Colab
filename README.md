@@ -1,2 +1,2 @@
 # Colab
-Models from colab
+This pipeline is responsible for moving notebooks from git to azuredevops
