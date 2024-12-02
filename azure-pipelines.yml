@@ -1,0 +1,79 @@
+trigger:
+- master  # Or your desired branch to trigger on Azure DevOps
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  # Build Stage: Sync files from GitHub to Azure DevOps repository
+  - stage: Build
+    displayName: 'Build Stage'
+    jobs:
+      - job: SyncFiles
+        displayName: 'Sync Files'
+        steps:
+          # Checkout the Azure DevOps repository
+          - task: Checkout@1
+            inputs:
+              repository: self
+              clean: true
+              persistCredentials: true
+              ref: master  # Adjust to 'main' if needed
+
+          # Clone the GitHub repository
+          - task: Bash@3
+            displayName: 'Clone GitHub repository'
+            inputs:
+              targetType: 'inline'
+              script: |
+                git config --global user.email "prislankabi@gmail.com"
+                git config --global user.name "prislano6"
+
+                git clone https://$(GitHubPAT)@github.com/prislano6/Colab.git /tmp/Colab
+                cd /tmp/Colab
+                git pull origin main
+            env:
+              GitHubPAT: $(GitHubPAT)
+
+          # Sync files to Azure DevOps repository
+          - task: Bash@3
+            displayName: 'Sync files from GitHub to Azure DevOps repository'
+            inputs:
+              targetType: 'inline'
+              script: |
+                cp -r /tmp/Colab/* $(Build.SourcesDirectory)
+                cd $(Build.SourcesDirectory)
+
+                git checkout master
+                git add .
+                git commit -m "Sync from GitHub Colab repo"
+                git push origin HEAD:master
+
+  # Release Stage: Deploy or release the artifacts
+  - stage: Release
+    displayName: 'Release Stage'
+    dependsOn: Build  # Ensures Build completes after Build
+    jobs:
+      - deployment: DeployArtifacts
+        displayName: 'Deploy to Environment'
+        environment: 'Production'  # Use an appropriate environment name
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Publish artifacts
+                - task: PublishBuildArtifacts@1
+                  displayName: 'Publish Build Artifacts'
+                  inputs:
+                    pathtoPublish: '$(Build.SourcesDirectory)'
+                    artifactName: 'SyncedFiles'
+                    publishLocation: 'Container'
+
+                # Simulate Deployment
+                - task: Bash@3
+                  displayName: 'Simulate Deployment'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      echo "Deploying artifacts to production..."
+                      # Add your deployment logic here (e.g., copy files, run scripts, etc.)
