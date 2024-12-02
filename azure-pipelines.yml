@@ -56,7 +56,7 @@ stages:
     jobs:
       - deployment: DeployArtifacts
         displayName: 'Deploy to Environment'
-        environment: 'Production'  # Use an appropriate environment name
+        environment: 'Dev'  # Use an appropriate environment name
         strategy:
           runOnce:
             deploy:
